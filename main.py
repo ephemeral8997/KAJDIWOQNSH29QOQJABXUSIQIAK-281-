@@ -243,23 +243,22 @@ mvk = Mvk()
 @mvk.command(name="cohere")
 async def cohere_ai(ctx, *, prompt: str):
     """contact cohere directly."""
+    if ctx.message.reference:
+        ref_msg = await ctx.bot.get_reference(ctx.channel, ctx.message.reference)
+        prompt = f'{ref_msg.author}: {ref_msg.content}\n' + prompt
+        send_func = ref_msg.reply
+    else:
+        send_func = ctx.send
+    if not prompt.strip():
+        return
     ai = AsyncCohereAI()
     meta = []
     if ENABLE_META:
         meta = await ctx.bot.get_all_metadata()
     response = await ai.send(prompt, system_messages=meta)
     response = response.message.content[0].text
-    if ENABLE_CODES:
-        if response.strip() in (_ := check_for_documents_file()).keys():
-            # here, we check the secret code
-            # and execute action based on it...
-            response = _[response]
     try:
-        if ctx.message.reference:
-            func = (await ctx.bot.get_reference(ctx.channel, ctx.message.reference)).reply
-        else:
-            func = ctx.send
-        await func(response)
+        await send_func(response)
     except discord.HTTPException:
         for chunk in ctx.bot.chunk(response, 1600):
             await ctx.send(chunk)
