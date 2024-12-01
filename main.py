@@ -183,9 +183,11 @@ class Mvk(commands.Bot):
         await super().on_message(msg)
 
     async def on_command(self,ctx):
-        if ctx.message:
+        try:
             await ctx.message.delete()
             await asyncio.sleep(0.0099) # reduce spam
+        except discord.NotFound:
+            pass
 
     async def can_be_a_command(self, msg):
         return bool((await self.get_context(msg)).command)
