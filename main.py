@@ -241,7 +241,7 @@ mvk = Mvk()
 
 
 @mvk.command(name="cohere")
-async def cohere_ai(ctx, *, prompt: str):
+async def cohere_ai(ctx, *, prompt: str=''):
     """contact cohere directly."""
     if ctx.message.reference:
         ref_msg = await ctx.bot.get_reference(ctx.channel, ctx.message.reference)
