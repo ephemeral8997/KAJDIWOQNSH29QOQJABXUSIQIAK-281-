@@ -183,8 +183,9 @@ class Mvk(commands.Bot):
         await super().on_message(msg)
 
     async def on_command(self,ctx):
-        await ctx.message.delete() # delete ur thing
-        await asyncio.sleep(0.0099) # reduce spam
+        if ctx.message:
+            await ctx.message.delete()
+            await asyncio.sleep(0.0099) # reduce spam
 
     async def can_be_a_command(self, msg):
         return bool((await self.get_context(msg)).command)
